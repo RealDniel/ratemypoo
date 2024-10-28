@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+/*class StatedBottomNavigationBar extends StatefulWidget {
+  const StatedBottomNavigationBar({super.key});
+}*/
+
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
@@ -52,21 +56,36 @@ class HomePage extends StatelessWidget {
 
       bottomNavigationBar: BottomNavigationBar(
         //Donovan add footer
+        unselectedLabelStyle: const TextStyle(
+          color: Colors.black45,
+        ),
+        type: BottomNavigationBarType.fixed,
         items: const [
-            BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.map),
+            icon: Icon(
+              Icons.map,
+              color: Colors.black45,
+            ),
             label: 'Map',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
+            icon: Icon(
+              Icons.add_box_outlined,
+              color: Colors.black45,
+            ),
+            label: 'Create',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.star,
+              color: Colors.black45,
+            ),
+            label: 'Favorites',
           ),
         ],
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.lightBlue,
+        fixedColor: Colors.black45,
+        unselectedItemColor: Colors.black45,
       ),
     );
   }
