@@ -51,6 +51,7 @@ class HomePage extends StatelessWidget {
 
 
       bottomNavigationBar: BottomNavigationBar(
+        //Donovan add footer
         items: const [
             BottomNavigationBarItem(
             icon: Icon(Icons.home),
