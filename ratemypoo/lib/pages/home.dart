@@ -9,15 +9,30 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       //appBar is the top section / header
       appBar: AppBar(
-        title: const Text('ratemypoo'),
-        backgroundColor: Colors.blue,
-      
-      
-              //Daniel Section
-
-
-
-
+        
+        title: 
+          Row(
+            children:[
+              //Profile Icon
+              IconButton(
+                color: Colors.white,
+                icon: const Icon(Icons.person),
+                onPressed: () {
+                  //Profile Button Aciton Here
+                },
+              ),
+              //Spacer
+              const Expanded(child: SizedBox(height:30)),
+              //Logo
+              const SizedBox(
+                height: 80.0,
+                child: Image(
+                  image: AssetImage('assets/ratemypooLogo.png')
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.blue,
       ),
       //body will be the main map section
       body: Stack(
