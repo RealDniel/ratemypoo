@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ratemypoo/pages/map.dart';
 import 'package:ratemypoo/pages/create.dart';
 import 'package:ratemypoo/pages/favorite.dart';
+import 'package:ratemypoo/services/auth_service.dart';
 
 //A widget state is created here
 class HomePage extends StatefulWidget {
@@ -31,6 +33,8 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  //This stores the User's profile picture URL
+  String? photoUrl;
 
   //This is the main widget that the app is based upon
   @override
@@ -43,12 +47,43 @@ class _HomePageState extends State<HomePage> {
           Row(
             children:[
               //Profile Icon
-              IconButton(
-                color: Colors.white,
-                icon: const Icon(Icons.person),
-                onPressed: () {
-                  //Profile Button Aciton Here
+              PopupMenuButton<String>(
+                icon: photoUrl != null
+                  ? CircleAvatar(backgroundImage: NetworkImage(photoUrl!),)
+                    : const Icon(Icons.person), //default = person icon
+                onSelected: (String result) async {
+                  if (result == 'sign_in') {
+                    //sign in function
+                    User? user = await AuthService().signInWithGoogle();
+                    if (user != null) {
+                      setState(() {
+                      photoUrl = user.photoURL; // Update photoUrl after sign in
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Welcome, ${user.displayName}!'))
+                      );
+                    }
+                  } else if (result == 'sign_out') {
+                    //sign out function
+                    await AuthService().signOut();
+                    setState(() {
+                    photoUrl = null; // Clear photoUrl on sign out
+                    });
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('You have signed out')),
+                    );
+                  }
                 },
+                itemBuilder: (BuildContext context) => [
+                  const PopupMenuItem<String>(
+                    value: 'sign_in',
+                    child: Text('Sign In'),
+                  ),
+                  const PopupMenuItem<String>(
+                    value: 'sign_out',
+                    child: Text('Sign Out'),
+                  ),
+                ]
               ),
               //Spacer
               const Expanded(child: SizedBox(height:30)),
