@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1032417254827",
+    "project_id": "rate-my-poo",
+    "storage_bucket": "rate-my-poo.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1032417254827:android:71f5ccc9c4865cd14406ee",
+        "android_client_info": {
+          "package_name": "com.example.ratemypoo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQwduOHxjDcr1Pde-y--6exvBL0ScHit0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
