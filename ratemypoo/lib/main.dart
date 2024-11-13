@@ -1,7 +1,16 @@
+import 'package:ratemypoo/firebase_options.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:ratemypoo/pages/home.dart';
 
-void main() {
+Future<void> main() async{
+  //init firebase
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform
+  );
+
+  //run app
   runApp(const MyApp());
 }
 
