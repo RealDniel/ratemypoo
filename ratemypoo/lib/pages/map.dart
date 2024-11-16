@@ -14,6 +14,14 @@ class _MapWidgetState extends State<MapWidget> {
   Location _LocationController = new Location();
 
   static const LatLng OSU = LatLng(44.5618, -123.2823);
+  LatLng? _currentPosition = null;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getLocationTracking();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,5 +52,16 @@ class _MapWidgetState extends State<MapWidget> {
       }
     }
 
+
+    _LocationController.onLocationChanged.listen((LocationData currentLocation){
+
+      if(currentLocation.latitude != null && currentLocation.longitude != null){
+
+        setState(() {
+          _currentPosition = LatLng(currentLocation.latitude!, currentLocation.longitude!);
+          print(_currentPosition); 
+        });
+      }
+    });
   }
 }
