@@ -22,79 +22,121 @@ class _CreateWidgetState extends State<CreateWidget> {
   final Set<Marker> _markers = {};
   LatLng? _selectedLocation;
 
+  String _selectedBathroomType = 'Male';
+
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Rating Section
-            const Text('Rate your experience by tapping on the stars and entering into the boxes:', style: TextStyle(fontSize: 18)),
-            RatingBar.builder(
-              initialRating: _rating,
-              minRating: 0,
-              maxRating: 5,
-              itemSize: 35.0,
-              itemBuilder: (context, _) => const Icon(Icons.star, color: Colors.amber),
-              onRatingUpdate: (rating) {
-                setState(() {
-                  _rating = rating;
-                });
-              },
-            ),
-            const SizedBox(height: 10),
-
-            // Review Title Section
-            TextField(
-              controller: _titleController,
-              decoration: const InputDecoration(hintText: 'Title'),
-            ),
-            const SizedBox(height: 10),
-
-            //Location Name Section
-            TextField(
-              controller: _locationController,
-              decoration: const InputDecoration(hintText: 'Location'),
-            ),
-            const SizedBox(height: 10),
-
-            // Review Description Section
-            TextField(
-              controller: _reviewController,
-              decoration: const InputDecoration(hintText: 'Description'),
-            ),
-            const SizedBox(height: 10),
-
-            // Location selection
-            const Text('Select Location on Map:', style: TextStyle(fontSize: 14)),
-            SizedBox(
-              height: 300,
-              child: GoogleMap(
-                onMapCreated: (GoogleMapController controller) {
-                  _mapController = controller;
+    return Scaffold(
+      body: SingleChildScrollView(
+        // Remove the ScrollConfiguration, use default behavior
+        physics: const BouncingScrollPhysics(), // Ensure default smooth scrolling
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Rate your experience by tapping on the stars and entering into the boxes:', style: TextStyle(fontSize: 18)),
+              RatingBar.builder(
+                initialRating: _rating,
+                minRating: 0,
+                maxRating: 5,
+                itemSize: 35.0,
+                itemBuilder: (context, _) => const Icon(Icons.star, color: Colors.amber),
+                onRatingUpdate: (rating) {
+                  setState(() {
+                    _rating = rating;
+                  });
                 },
-                initialCameraPosition: const CameraPosition(
-                  target: LatLng(44.5618, -123.2823),
-                  zoom: 15,
-                ),
-                markers: _markers,
-                onTap: _onMapTapped,
-              )
-            ),
+              ),
+              const SizedBox(height: 20),
 
-            // Submit Button
-            ElevatedButton(
-              onPressed: _submitReview,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue
-              ), 
-              child: const Text('Submit Review')
-            )
-          ],
-        )
-      )
+              // Review Title Section
+              TextField(
+                controller: _titleController,
+                decoration: const InputDecoration(hintText: 'Title'),
+              ),
+              const SizedBox(height: 20),
+
+              // Location Name Section
+              TextField(
+                controller: _locationController,
+                decoration: const InputDecoration(hintText: 'Location'),
+              ),
+              const SizedBox(height: 20),
+
+              // Review Description Section
+              TextField(
+                controller: _reviewController,
+                decoration: const InputDecoration(hintText: 'Description'),
+              ),
+              const SizedBox(height: 20),
+
+              // Bathroom type section
+              const Text('Select Bathroom Type:', style: TextStyle(fontSize: 18)),
+              Column(
+                children: [
+                  RadioListTile<String>(
+                    title: const Text('Mens'),
+                    value: 'Male',
+                    groupValue: _selectedBathroomType,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedBathroomType = value!;
+                      });
+                    },
+                  ),
+                  RadioListTile<String>(
+                    title: const Text('Womens'),
+                    value: 'Female',
+                    groupValue: _selectedBathroomType,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedBathroomType = value!;
+                      });
+                    },
+                  ),
+                  RadioListTile<String>(
+                    title: const Text('Single-User'),
+                    value: 'Single',
+                    groupValue: _selectedBathroomType,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedBathroomType = value!;
+                      });
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+
+              // Location selection
+              const Text('Select Location on Map:', style: TextStyle(fontSize: 18)),
+              SizedBox(
+                height: 300,
+                child: GoogleMap(
+                  onMapCreated: (GoogleMapController controller) {
+                    _mapController = controller;
+                  },
+                  initialCameraPosition: const CameraPosition(
+                    target: LatLng(44.5618, -123.2823),
+                    zoom: 15,
+                  ),
+                  markers: _markers,
+                  onTap: _onMapTapped,
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Submit Button
+              ElevatedButton(
+                onPressed: _submitReview,
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                child: const Text('Submit Review'),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -142,6 +184,7 @@ class _CreateWidgetState extends State<CreateWidget> {
         'rating': _rating,
         'latitude': _selectedLocation!.latitude,
         'longitude': _selectedLocation!.longitude,
+        'bathroom': _selectedBathroomType,
         'timestamp': FieldValue.serverTimestamp(),
       });
 
