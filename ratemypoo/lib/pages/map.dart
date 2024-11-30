@@ -25,7 +25,7 @@ class _MapWidgetState extends State<MapWidget> {
     super.initState();
     loadCustomMarker(); // Load the custom icon
     getLocationTracking();
-    _loadReviewMarkers();
+    _loadReviewMarkers(); // Load markers with reviews
   }
 
   Future<void> loadCustomMarker() async {
@@ -74,7 +74,7 @@ class _MapWidgetState extends State<MapWidget> {
                 _mapController = controller;
               },
               onTap: (LatLng position) {
-                _onMapTapped(position);
+                _onMapTapped(position); // Handle map tap if needed
               },
             ),
     );
@@ -82,8 +82,7 @@ class _MapWidgetState extends State<MapWidget> {
 
   Future<void> _loadReviewMarkers() async {
     try {
-      QuerySnapshot snapshot =
-          await FirebaseFirestore.instance.collection('reviews').get();
+      QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('reviews').get();
 
       Set<Marker> newMarkers = snapshot.docs.map((doc) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
@@ -91,11 +90,10 @@ class _MapWidgetState extends State<MapWidget> {
           markerId: MarkerId(doc.id),
           position: LatLng(data['latitude'], data['longitude']),
           infoWindow: InfoWindow(
-            title: data['title'],
-            snippet: 'Rating: ${data['rating']}',
+            title: data['location'],
           ),
           onTap: () {
-            _onMarkerTapped(doc.id);
+            _onMarkerTapped(doc.id, LatLng(data['latitude'], data['longitude'])); // Pass markerId and location
           },
         );
       }).toSet();
@@ -108,16 +106,88 @@ class _MapWidgetState extends State<MapWidget> {
     }
   }
 
-  void _onMapTapped(LatLng position) {
+  // Handle the marker tap: Show reviews and allow adding a new one
+  void _onMarkerTapped(String markerId, LatLng markerLocation) async {
+    try {
+      QuerySnapshot reviewSnapshot = await FirebaseFirestore.instance
+          .collection('reviews')
+          .where('markerId', isEqualTo: markerId) // Query reviews by markerId
+          .get();
+
+      double totalRating = 0;
+      int reviewCount = reviewSnapshot.docs.length;
+      List<Map<String, dynamic>> reviews = [];
+
+      if (reviewCount > 0) {
+        for (var doc in reviewSnapshot.docs) {
+          Map<String, dynamic> review = doc.data() as Map<String, dynamic>;
+          reviews.add(review);
+          totalRating += review['rating'].toDouble(); // Ensure rating is a double
+        }
+      }
+
+      double averageRating = reviewCount > 0 ? totalRating / reviewCount : 0.0;
+
+      showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Display the average rating
+                Text(
+                  'Average Rating: ${averageRating.toStringAsFixed(1)}',
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 10),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: reviews.length,
+                    itemBuilder: (context, index) {
+                      var review = reviews[index];
+                      return ListTile(
+                        title: Text(review['title'] ?? 'No title'),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('By: ${review['userName']}'),
+                            Text('Rating: ${review['rating']}'),
+                            Text(review['description'] ?? 'No description'),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ReviewForm(
+                          markerId: MarkerId(markerId),
+                          markerLocation: markerLocation, // Pass the location
+                        ),
+                      ),
+                    );
+                  },
+                  child: const Text('Add a Review'),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    } catch (e) {
+      print('Error fetching reviews: $e');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+    }
   }
 
-  void _onMarkerTapped(String markerId) {
- 
-  showModalBottomSheet(
-    context: context,
-    builder: (BuildContext context) {
-      return ReviewForm(markerId: MarkerId(markerId)); 
-    },
-  );
-}
+  // Placeholder method for handling map taps if needed
+  void _onMapTapped(LatLng position) {
+    print("Tapped on map at: $position");
+  }
 }

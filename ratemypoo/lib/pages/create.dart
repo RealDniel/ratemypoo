@@ -17,7 +17,7 @@ class _CreateWidgetState extends State<CreateWidget> {
   final TextEditingController _reviewController = TextEditingController();
   double _rating = 0.0;
   GoogleMapController? _mapController;
-  LatLng? _selectedLocation;
+  LatLng? _selectedLocation; // Variable to hold selected location
 
   String _selectedBathroomType = 'Male';
 
@@ -36,7 +36,10 @@ class _CreateWidgetState extends State<CreateWidget> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Rate your experience by tapping on the stars and entering into the boxes:', style: TextStyle(fontSize: 18)),
+              const Text(
+                'Rate your experience by tapping on the stars and entering into the boxes:',
+                style: TextStyle(fontSize: 18),
+              ),
               RatingBar.builder(
                 initialRating: _rating,
                 minRating: 0,
@@ -117,7 +120,16 @@ class _CreateWidgetState extends State<CreateWidget> {
                     target: LatLng(44.5618, -123.2823),
                     zoom: 15,
                   ),
-                  onTap: _onMapTapped,
+                  onTap: _onMapTapped, // Ensure onTap is calling _onMapTapped
+                  markers: _selectedLocation == null
+                      ? {}
+                      : {
+                          Marker(
+                            markerId: const MarkerId('selectedLocation'),
+                            position: _selectedLocation!,
+                            infoWindow: const InfoWindow(title: 'Selected Location'),
+                          ),
+                        },
                 ),
               ),
               const SizedBox(height: 20),
@@ -134,12 +146,14 @@ class _CreateWidgetState extends State<CreateWidget> {
     );
   }
 
+  // This method will update _selectedLocation whenever the user taps on the map
   void _onMapTapped(LatLng position) {
     setState(() {
       _selectedLocation = position;
     });
   }
 
+  // Submit the review to Firestore
   Future<void> _submitReview() async {
     String title = _titleController.text.trim();
     String locationName = _locationController.text.trim();
@@ -173,6 +187,7 @@ class _CreateWidgetState extends State<CreateWidget> {
         'latitude': _selectedLocation!.latitude,
         'longitude': _selectedLocation!.longitude,
         'bathroom': _selectedBathroomType,
+        "markerId": "marker_id_value", // Update with a real value if necessary
         'timestamp': FieldValue.serverTimestamp(),
       });
 
