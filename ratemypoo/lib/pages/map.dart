@@ -1,3 +1,4 @@
+import 'dart:html' as html;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
@@ -10,58 +11,67 @@ class MapWidget extends StatefulWidget {
 }
 
 class _MapWidgetState extends State<MapWidget> {
-
-  Location _LocationController = new Location();
+  Location _LocationController = Location();
 
   static const LatLng OSU = LatLng(44.5618, -123.2823);
   LatLng? _currentPosition = null;
 
+  BitmapDescriptor? customIcon;
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    loadCustomMarker();
     getLocationTracking();
+  }
+
+  Future<void> loadCustomMarker() async {
+    customIcon = await BitmapDescriptor.asset(
+      const ImageConfiguration(size: Size(30, 30)),
+      'assets/navicon.png', 
+    );
+    setState(() {}); 
   }
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: GoogleMap(initialCameraPosition: CameraPosition(target: OSU, zoom: 15 ))
-      );
+    return Scaffold(
+      body: _currentPosition == null
+          ? const Center(child: Text("Loading..."))
+          : GoogleMap(
+              initialCameraPosition: const CameraPosition(target: OSU, zoom: 15),
+              markers: {
+                Marker(
+                  markerId: const MarkerId("currentLocation"),
+                  icon: customIcon ?? BitmapDescriptor.defaultMarker,
+                  position: _currentPosition!,
+                ),
+              },
+            ),
+    );
   }
 
-  Future<void> getLocationTracking() async{
+  Future<void> getLocationTracking() async {
+    if (html.window.navigator.geolocation != null) {
+      try {
+        html.window.navigator.geolocation.getCurrentPosition().then((position) {
+          final lat = position.coords?.latitude;
+          final lng = position.coords?.longitude;
 
-    bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
-
-    _serviceEnabled = await _LocationController.serviceEnabled();
-    if(_serviceEnabled){
-
-      _serviceEnabled = await _LocationController.requestService();
-    }
-    else{
-      return;
-    }
-
-    _permissionGranted = await _LocationController.hasPermission();
-    if(_permissionGranted == PermissionStatus.denied){
-      _permissionGranted = await _LocationController.requestPermission();
-      if(_permissionGranted !=PermissionStatus.granted){
-        return;
-      }
-    }
-
-
-    _LocationController.onLocationChanged.listen((LocationData currentLocation){
-
-      if(currentLocation.latitude != null && currentLocation.longitude != null){
-
-        setState(() {
-          _currentPosition = LatLng(currentLocation.latitude!, currentLocation.longitude!);
-          print(_currentPosition); 
+          if (lat != null && lng != null) {
+            setState(() {
+              _currentPosition = LatLng(lat.toDouble(), lng.toDouble()); // Ensure values are doubles
+              print(_currentPosition);
+            });
+          } else {
+            print('Latitude or Longitude is null');
+          }
         });
+      } catch (e) {
+        print('Error: $e');
       }
-    });
+    } else {
+      print('Geolocation is not supported in this browser.');
+    }
   }
 }

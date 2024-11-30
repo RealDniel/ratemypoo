@@ -91,7 +91,7 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(
                 height: 80.0,
                 child: Image(
-                  image: AssetImage('assets/ratemypooLogo.png')
+                  image: AssetImage('assets/poologo.png')
                 ),
               ),
             ],
