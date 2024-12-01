@@ -141,6 +141,7 @@ class _MapWidgetState extends State<MapWidget> {
                   'Average Rating: ${averageRating.toStringAsFixed(1)}',
                   style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
+                //I WANT TO ADD FAVORITE BUTTON HERE
                 const SizedBox(height: 10),
                 Expanded(
                   child: ListView.builder(

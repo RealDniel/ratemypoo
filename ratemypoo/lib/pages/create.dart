@@ -175,8 +175,11 @@ class _CreateWidgetState extends State<CreateWidget> {
     }
 
     try {
+      // Generate a unique ID for the review (markerId)
+      DocumentReference newReviewRef = FirebaseFirestore.instance.collection('reviews').doc();
+
       // Add review to Firestore
-      await FirebaseFirestore.instance.collection('reviews').add({
+      await newReviewRef.set({
         'userId': user.uid,
         'userName': user.displayName,
         'userPhotoURL': user.photoURL,
@@ -187,7 +190,7 @@ class _CreateWidgetState extends State<CreateWidget> {
         'latitude': _selectedLocation!.latitude,
         'longitude': _selectedLocation!.longitude,
         'bathroom': _selectedBathroomType,
-        "markerId": "marker_id_value", // Update with a real value if necessary
+        "markerId": newReviewRef.id, // Use the document ID as markerId
         'timestamp': FieldValue.serverTimestamp(),
       });
 
