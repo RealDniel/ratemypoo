@@ -4,6 +4,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:location/location.dart';
 import 'package:ratemypoo/pages/review.dart';
+import 'package:ratemypoo/services/favorite_service.dart';
 
 class MapWidget extends StatefulWidget {
   const MapWidget({super.key});
@@ -142,6 +143,22 @@ class _MapWidgetState extends State<MapWidget> {
                   style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 //I WANT TO ADD FAVORITE BUTTON HERE
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    try {
+                      await FavoriteService().addFavorite(markerId);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Added to favorites!')),
+                      );
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Failed to add to favorites: $e')),
+                      );
+                    }
+                  },
+                  icon: const Icon(Icons.favorite),
+                  label: const Text('Add to Favorites'),
+                ),
                 const SizedBox(height: 10),
                 Expanded(
                   child: ListView.builder(
