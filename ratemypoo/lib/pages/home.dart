@@ -23,7 +23,7 @@ class _HomePageState extends State<HomePage> {
   final List<Widget> _widgetOptions = [
     const MapWidget(),
     const CreateWidget(),
-    const FavoriteWidget(),
+    const FavoritePage(),
   ];
 
   //This is a function that selets the specified icon
