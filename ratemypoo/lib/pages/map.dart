@@ -20,6 +20,7 @@ class _MapWidgetState extends State<MapWidget> {
   BitmapDescriptor? customIcon; // Variable to store the custom icon
   final Set<Marker> _markers = {}; // Set to hold all markers
   GoogleMapController? _mapController;
+  String? _mapStyle; // Variable to store the custom map style
 
   @override
   void initState() {
@@ -27,14 +28,23 @@ class _MapWidgetState extends State<MapWidget> {
     loadCustomMarker(); // Load the custom icon
     getLocationTracking();
     _loadReviewMarkers(); // Load markers with reviews
+    _loadMapStyle(); // Load the map style
+  }
+
+  Future<void> _loadMapStyle() async {
+    try {
+      _mapStyle = await DefaultAssetBundle.of(context).loadString('assets/custommap.json');
+    } catch (e) {
+      print('Error loading map style: $e');
+    }
   }
 
   Future<void> loadCustomMarker() async {
     customIcon = await BitmapDescriptor.fromAssetImage(
-      const ImageConfiguration(size: Size(40, 40)), // Optionally set the size
+      const ImageConfiguration(size: Size(40, 40)), // Size of the Marker
       'assets/navicon.png', // Path to your asset
     );
-    setState(() {}); // Trigger a rebuild after loading the icon
+    setState(() {});
   }
 
   Future<void> getLocationTracking() async {
@@ -70,12 +80,15 @@ class _MapWidgetState extends State<MapWidget> {
               initialCameraPosition: const CameraPosition(target: OSU, zoom: 15),
               markers: _markers,
               myLocationEnabled: true,
-              myLocationButtonEnabled: true,  // Enable location button
+              myLocationButtonEnabled: true, // Enable location button
               onMapCreated: (GoogleMapController controller) {
                 _mapController = controller;
+                if (_mapStyle != null) {
+                  controller.setMapStyle(_mapStyle);
+                }
               },
               onTap: (LatLng position) {
-                _onMapTapped(position); // Handle map tap if needed
+                _onMapTapped(position);
               },
             ),
     );
@@ -107,12 +120,12 @@ class _MapWidgetState extends State<MapWidget> {
     }
   }
 
-  // Handle the marker tap: Show reviews and allow adding a new one
+  
   void _onMarkerTapped(String markerId, LatLng markerLocation) async {
     try {
       QuerySnapshot reviewSnapshot = await FirebaseFirestore.instance
           .collection('reviews')
-          .where('markerId', isEqualTo: markerId) // Query reviews by markerId
+          .where('markerId', isEqualTo: markerId)
           .get();
 
       double totalRating = 0;
@@ -123,7 +136,7 @@ class _MapWidgetState extends State<MapWidget> {
         for (var doc in reviewSnapshot.docs) {
           Map<String, dynamic> review = doc.data() as Map<String, dynamic>;
           reviews.add(review);
-          totalRating += review['rating'].toDouble(); // Ensure rating is a double
+          totalRating += review['rating'].toDouble();
         }
       }
 
@@ -186,7 +199,7 @@ class _MapWidgetState extends State<MapWidget> {
                       MaterialPageRoute(
                         builder: (context) => ReviewForm(
                           markerId: MarkerId(markerId),
-                          markerLocation: markerLocation, // Pass the location
+                          markerLocation: markerLocation,
                         ),
                       ),
                     );
@@ -203,8 +216,6 @@ class _MapWidgetState extends State<MapWidget> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
     }
   }
-
-  // Placeholder method for handling map taps if needed
   void _onMapTapped(LatLng position) {
     print("Tapped on map at: $position");
   }

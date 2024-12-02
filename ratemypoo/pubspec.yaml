@@ -95,3 +95,4 @@ flutter:
   assets:
     - assets/navicon.png
     - assets/poologo.png
+    - assets/custommap.json
