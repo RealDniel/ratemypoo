@@ -48,23 +48,18 @@ class _FavoritePageState extends State<FavoritePage> {
                       final markerData = markerSnapshot.data!.data() as Map<String, dynamic>;
                       final location = markerData['location'] ?? 'Unknown';
                       final rating = markerData['rating'] ?? 'No rating';
-                      final title = markerData['title'] ?? 'No title';
-                      final description = markerData['description'] ?? 'No description';
                       final bathroom = markerData['bathroom'] ?? 'Unknown';
-                      final userName = markerData['userName'] ?? 'Anonymous';
 
 
                       //Stuff to display
                       return ListTile(
-                        title: Text("$title", style: const TextStyle(fontWeight: FontWeight.bold)),
+                        title: Text("$location", style: const TextStyle(fontWeight: FontWeight.bold)),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start, // Align text to the start
                           children: [
-                            Text("Location: $location"),
                             Text("Rating: $rating"),
-                            Text("Description: $description"),
-                            Text("Bathroom Type: $bathroom"),
-                            Text("Reviewer: $userName")
+
+                            Text("Bathroom Type: $bathroom")
                           ],
                         ),
                         trailing: IconButton(

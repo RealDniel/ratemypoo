@@ -39,6 +39,7 @@ dependencies:
   google_sign_in_android: ^6.1.33
   flutter_rating_bar: ^4.0.1
   cloud_firestore: ^5.5.0
+  flutter_dotenv: ^5.0.2
 
 dev_dependencies:
   flutter_test:
