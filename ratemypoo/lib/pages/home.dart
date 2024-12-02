@@ -50,7 +50,7 @@ class _HomePageState extends State<HomePage> {
               PopupMenuButton<String>(
                 icon: photoUrl != null
                   ? CircleAvatar(backgroundImage: NetworkImage(photoUrl!),)
-                    : const Icon(Icons.person), //default = person icon
+                    : const Icon(Icons.person, color: Colors.white,), //default = person icon
                 onSelected: (String result) async {
                   if (result == 'sign_in') {
                     //sign in function
@@ -96,26 +96,13 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
-        backgroundColor: Colors.lightBlue,
+        backgroundColor: const Color.fromARGB(255, 1, 32, 80),
       ),
       //body will be the main map section
       body: Stack(
         children: [
           _widgetOptions.elementAt(_selectedIndex),
           //Positioned is where the filter button is
-          Positioned(
-            //position
-            bottom: 16,
-            right: 16,
-            //filter button action
-            child: FloatingActionButton(
-              onPressed: () {
-                //action when filter button is pressed
-              },
-              //Visual for the button
-              child: const Icon(Icons.filter_list),
-            ),
-          ),
         ],
       ),
 
@@ -129,7 +116,7 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: BottomNavigationBar(
         //Donovan: This is the footer, it has every single icon used
         unselectedLabelStyle: const TextStyle(
-          color: Colors.black45,
+          color: Color.fromARGB(193, 243, 239, 239),
         ),
         type: BottomNavigationBarType.fixed,
         items: const <BottomNavigationBarItem>[
@@ -152,10 +139,10 @@ class _HomePageState extends State<HomePage> {
             label: 'Favorites',
           ),
         ],
-        backgroundColor: Colors.lightBlue,
-        unselectedItemColor: Colors.black45,
+        backgroundColor: const Color.fromARGB(255, 15, 26, 111),
+        unselectedItemColor: const Color.fromARGB(180, 226, 226, 226),
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.black,
+        selectedItemColor: Colors.white,
         onTap: _onItemTapped,
       ),
     );
